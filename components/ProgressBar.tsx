@@ -1,12 +1,18 @@
 "use client";
 import React from "react";
 
-export default function ProgressBar({ value }: { value: number }) {
+type Props = {
+  current: number;
+  total: number;
+};
+
+export default function ProgressBar({ current, total }: Props) {
+  const percentage = Math.round((current / total) * 100);
   return (
-    <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+    <div className="w-full bg-gray-200 rounded-full h-4 mb-4">
       <div
-        className="h-2 rounded-full transition-width duration-300"
-        style={{ width: `${Math.min(100, Math.max(0, value))}%` }}
+        className="bg-blue-500 h-4 rounded-full"
+        style={{ width: `${percentage}%` }}
       />
     </div>
   );

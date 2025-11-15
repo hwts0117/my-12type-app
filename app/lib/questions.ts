@@ -1,24 +1,36 @@
-// lib/questions.ts
-export type Choice = { id: string; text: string; scores: Record<string, number> };
-export type Question = { id: string; text: string; choices: Choice[] };
+export type Question = {
+  id: string;
+  text: string;
+  choices: { id: string; text: string }[];
+};
 
 export const questions: Question[] = [
   {
     id: "q1",
-    text: "新しいアイデアが浮かんだとき、まず何をする？",
+    text: "あなたの好きな色は？",
     choices: [
-      { id: "q1a", text: "すぐにメモして組み立てる", scores: { storyfinder: 2, inspirer: 1 } },
-      { id: "q1b", text: "周りに相談して広げる", scores: { connector: 2, inspirer: 1 } },
-      { id: "q1c", text: "しばらく寝かせる", scores: { analyzer: 2 } }
-    ]
+      { id: "c1", text: "赤" },
+      { id: "c2", text: "青" },
+      { id: "c3", text: "緑" },
+    ],
   },
   {
     id: "q2",
-    text: "作品を選ぶとき、最も重視するのは？",
+    text: "好きな動物は？",
     choices: [
-      { id: "q2a", text: "ストーリー性", scores: { storyfinder: 2 } },
-      { id: "q2b", text: "斬新さ/独創性", scores: { inspirer: 2 } },
-      { id: "q2c", text: "映像美や音", scores: { aesthetic: 2 } }
-    ]
-  }
+      { id: "c1", text: "猫" },
+      { id: "c2", text: "犬" },
+      { id: "c3", text: "鳥" },
+    ],
+  },
+  {
+    id: "q3",
+    text: "好きな季節は？",
+    choices: [
+      { id: "c1", text: "春" },
+      { id: "c2", text: "夏" },
+      { id: "c3", text: "秋" },
+      { id: "c4", text: "冬" },
+    ],
+  },
 ];
