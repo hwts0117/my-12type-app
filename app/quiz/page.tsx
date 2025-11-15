@@ -1,39 +1,52 @@
-"use client";
-import React, { useState } from "react";
-import { questions as quizQuestions, Question } from "../lib/questions";
-import QuestionCard from "../../components/QuestionCard";
-import ProgressBar from "../../components/ProgressBar";
-import { useRouter } from "next/navigation";
+'use client';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+type Answer = string;
 
 export default function QuizPage() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
   const router = useRouter();
 
-  const handlePick = (choiceId: string) => {
-    const currentQuestion = quizQuestions[currentIndex];
-    const updatedAnswers = { ...answers, [currentQuestion.id]: choiceId };
-    setAnswers(updatedAnswers);
+  // 複数問の回答を state で管理
+  const [answers, setAnswers] = useState<{ [key: string]: Answer }>({});
 
-    if (currentIndex + 1 < quizQuestions.length) {
-      setCurrentIndex(currentIndex + 1);
-    } else {
-      // 回答を sessionStorage に保存して結果ページへ
-      sessionStorage.setItem("quizAnswers", JSON.stringify(updatedAnswers));
-      router.push("/result");
-    }
+  const questions = [
+    { id: 'q1', text: 'あなたの好きな色は？', options: ['赤', '青', '緑'] },
+    { id: 'q2', text: 'あなたの好きな動物は？', options: ['猫', '犬', '鳥'] },
+    { id: 'q3', text: 'あなたの好きな季節は？', options: ['春', '夏', '冬'] },
+  ];
+
+  const handleChange = (questionId: string, value: Answer) => {
+    setAnswers({ ...answers, [questionId]: value });
   };
 
-  const currentQuestion = quizQuestions[currentIndex];
+  const handleSubmit = () => {
+    // クエリにまとめて渡す
+    const query = new URLSearchParams(answers as any).toString();
+    router.push(`/result?${query}`);
+  };
 
   return (
-    <div className="max-w-md mx-auto mt-8">
-      <ProgressBar current={currentIndex} total={quizQuestions.length} />
-      <QuestionCard
-        question={currentQuestion}
-        selected={answers[currentQuestion.id]}
-        onPick={handlePick}
-      />
+    <div>
+      <h1>Quizページ</h1>
+      {questions.map((q) => (
+        <div key={q.id}>
+          <p>{q.text}</p>
+          {q.options.map((opt) => (
+            <label key={opt}>
+              <input
+                type="radio"
+                name={q.id}
+                value={opt}
+                checked={answers[q.id] === opt}
+                onChange={() => handleChange(q.id, opt)}
+              />
+              {opt}
+            </label>
+          ))}
+        </div>
+      ))}
+      <button onClick={handleSubmit}>結果を見る</button>
     </div>
   );
 }
