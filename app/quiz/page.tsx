@@ -2,51 +2,56 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-type Answer = string;
+type Question = {
+  question: string;
+  options: { text: string; score: number }[];
+};
+
+const questions: Question[] = [
+  {
+    question: 'あなたは計画的ですか？',
+    options: [
+      { text: 'はい', score: 1 },
+      { text: 'いいえ', score: 0 },
+    ],
+  },
+  {
+    question: '新しいことに挑戦するのが好きですか？',
+    options: [
+      { text: 'はい', score: 1 },
+      { text: 'いいえ', score: 0 },
+    ],
+  },
+];
 
 export default function QuizPage() {
+  const [step, setStep] = useState(0);
+  const [score, setScore] = useState(0);
   const router = useRouter();
 
-  // 複数問の回答を state で管理
-  const [answers, setAnswers] = useState<{ [key: string]: Answer }>({});
-
-  const questions = [
-    { id: 'q1', text: 'あなたの好きな色は？', options: ['赤', '青', '緑'] },
-    { id: 'q2', text: 'あなたの好きな動物は？', options: ['猫', '犬', '鳥'] },
-    { id: 'q3', text: 'あなたの好きな季節は？', options: ['春', '夏', '冬'] },
-  ];
-
-  const handleChange = (questionId: string, value: Answer) => {
-    setAnswers({ ...answers, [questionId]: value });
+  const handleAnswer = (s: number) => {
+    setScore(score + s);
+    if (step + 1 < questions.length) {
+      setStep(step + 1);
+    } else {
+      router.push(`/result?score=${score + s}`);
+    }
   };
 
-  const handleSubmit = () => {
-    // クエリにまとめて渡す
-    const query = new URLSearchParams(answers as any).toString();
-    router.push(`/result?${query}`);
-  };
+  const q = questions[step];
 
   return (
-    <div>
-      <h1>Quizページ</h1>
-      {questions.map((q) => (
-        <div key={q.id}>
-          <p>{q.text}</p>
-          {q.options.map((opt) => (
-            <label key={opt}>
-              <input
-                type="radio"
-                name={q.id}
-                value={opt}
-                checked={answers[q.id] === opt}
-                onChange={() => handleChange(q.id, opt)}
-              />
-              {opt}
-            </label>
-          ))}
-        </div>
+    <main style={{ padding: '2rem', textAlign: 'center' }}>
+      <h2>{q.question}</h2>
+      {q.options.map((o, i) => (
+        <button
+          key={i}
+          onClick={() => handleAnswer(o.score)}
+          style={{ display: 'block', margin: '1rem auto', padding: '1rem 2rem' }}
+        >
+          {o.text}
+        </button>
       ))}
-      <button onClick={handleSubmit}>結果を見る</button>
-    </div>
+    </main>
   );
 }
